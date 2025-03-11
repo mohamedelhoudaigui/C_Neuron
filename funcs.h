@@ -15,10 +15,12 @@ void	take_input(Layer* input_layer, double* data, size_t data_size);
 void	collect_output(Layer* l1, Layer* l2);
 void	compute_node(Node* n);
 void	compute_layer(Layer* l);
-void	forward_propagation(NN* nn);
+void	forward_propagation(NN* nn, double* data);
 
 double	relu(double n);
+double	xavier_init(size_t n_inputs);
 
 void	node_data(Node* node);
+void	layer_data(Layer* l);
 
 #endif

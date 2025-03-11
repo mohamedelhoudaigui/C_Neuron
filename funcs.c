@@ -15,6 +15,26 @@ void	node_data(Node* node)
 	printf("\nnode output =  %f\n---------------------\n", node->output);
 }
 
+void	layer_data(Layer* l)
+{
+	for (size_t i = 0; i < l->n_nodes; ++i)
+	{
+		node_data(l->nodes[i]);
+	}
+}
+
+//--------------------------------
+
+double relu(double n)
+{
+	return (n <= 0 ? 0 : n);
+}
+
+double	xavier_init(size_t n_inputs)
+{
+	return ((double)rand() / RAND_MAX * sqrt(1.0 / n_inputs));
+}
+
 
 //------------------------------------
 
@@ -29,7 +49,7 @@ Node*	init_node(size_t n_inputs, double bias)
 
 	for (size_t i = 0; i < n_inputs; ++i)
 	{
-		res->weight[i] = rand() / RAND_MAX;
+		res->weight[i] = xavier_init(n_inputs);
 	}
 
 	return (res);
@@ -55,6 +75,7 @@ Layer*	init_layer(layer_type t, size_t n_nodes, size_t prev_n_nodes)
 NN*	init_nn(size_t n_layers, size_t n_input, size_t n_hidden, size_t n_output)
 {
 	NN* res = gb_malloc(1, sizeof(NN), ALLOC);
+	res->n_layers = n_layers;
 	res->layers = gb_malloc(n_layers + 1, sizeof(Layer*), ALLOC);
 	for (size_t i = 0; i < n_layers; ++i)
 	{
@@ -74,7 +95,7 @@ NN*	init_nn(size_t n_layers, size_t n_input, size_t n_hidden, size_t n_output)
 	for (size_t i = 0; i < n_layers - 1; ++i)
 		res->layers[i]->next = res->layers[i + 1];
 	for (size_t i = n_layers - 1; i > 0; --i)
-		res->layers[i]->back = res->layers[i +- 1];
+		res->layers[i]->back = res->layers[i - 1];
 
 	res->input_layer = res->layers[0];
 	res->output_layer = res->layers[n_layers - 1];
@@ -83,11 +104,6 @@ NN*	init_nn(size_t n_layers, size_t n_input, size_t n_hidden, size_t n_output)
 }
 
 //--------------------------------
-
-double relu(double n)
-{
-	return (n <= 0 ? 0 : n);
-}
 
 void	take_input(Layer* input_layer, double* data, size_t data_size)
 {
@@ -118,7 +134,7 @@ void	compute_node(Node* n)
 		res += n->weight[i] * n->input[i];
 	}
 	res += n->bias;
-	n->output = relu(res);
+	n->output = res;
 }
 
 void	compute_layer(Layer* l)
@@ -133,8 +149,12 @@ void	compute_layer(Layer* l)
 	}
 }
 
-void	forward_propagation(NN* nn)
+void	forward_propagation(NN* nn, double* data)
 {
+	for (size_t i = 0; i < nn->input_layer->n_nodes; ++i)
+	{
+		nn->input_layer->nodes[i]->input[0] = data[i];
+	}
 	for (size_t i = 0; i < nn->n_layers; ++i)
 	{
 		compute_layer(nn->layers[i]);

@@ -5,7 +5,7 @@ SRCS = main.c garbage.c funcs.c
 OBJS = $(patsubst %.c, %.o, $(SRCS))
 
 # Headers
-HEADERS = funcs.h macros.h types.h garbage.h
+HEADERS = funcs.h macro.h types.h garbage.h
 
 # Compiler
 CC = cc
