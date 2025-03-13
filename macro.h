@@ -17,6 +17,8 @@
 #define H_N_NEURONS 4
 #define O_N_NEURONS 1
 
+#define EULER_NUMBER 2.71828
+
 
 typedef enum layer_type {
 	INPUT,

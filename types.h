@@ -22,6 +22,8 @@ typedef struct	Layer {
 	struct Layer* next;
 	struct Layer* back;
 
+	double (*layer_activ) (double n);
+
 }	Layer;
 
 typedef struct Neuron_Network {

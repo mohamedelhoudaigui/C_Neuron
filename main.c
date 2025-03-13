@@ -11,7 +11,7 @@ double**	rand_data(size_t y, size_t x)
 		res[i] = gb_malloc(x, sizeof(double), ALLOC);
 		for (size_t j = 0; j < x; ++j)
 		{
-			res[i][j] = rand() / RAND_MAX;
+			res[i][j] = (double)rand() / RAND_MAX;
 		}
 	}
 	return (res);
@@ -22,8 +22,12 @@ int main ()
 	srand(time(NULL));
 
 	double** data = rand_data(DATA_Y, DATA_X);
-	NN* test = init_nn(N_LAYERS, DATA_X, I_N_NEURONS, H_N_NEURONS, O_N_NEURONS);
-	forward_propagation(test, data);
+	NN* test = init_nn(N_LAYERS,
+						I_N_NEURONS, H_N_NEURONS, O_N_NEURONS,
+						sigmoid, relu);
+
+	for (int i = 0; i < DATA_Y; ++i)
+		forward_propagation(test, data[i]);
 
 	layer_data(test->input_layer);
 	layer_data(test->output_layer);

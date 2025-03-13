@@ -30,11 +30,15 @@ double relu(double n)
 	return (n <= 0 ? 0 : n);
 }
 
-double	xavier_init(size_t n_inputs)
+double sigmoid(double n)
 {
-	return ((double)rand() / RAND_MAX * sqrt(1.0 / n_inputs));
+	return (1 / (1 + pow(EULER_NUMBER, -n)));
 }
 
+double	xavier_init(size_t n_inputs)
+{
+	return ((double)rand() / RAND_MAX * 2.0 - 1.0) * sqrt(1.0 / n_inputs);
+}
 
 //------------------------------------
 
@@ -72,7 +76,9 @@ Layer*	init_layer(layer_type t, size_t n_nodes, size_t prev_n_nodes)
 	return (res);
 }
 
-NN*	init_nn(size_t n_layers, size_t input_cap, size_t n_input, size_t n_hidden, size_t n_output)
+NN*	init_nn(size_t n_layers,
+			size_t n_input, size_t n_hidden, size_t n_output,
+			void* hidden_activ, void* output_activ)
 {
 	NN* res = gb_malloc(1, sizeof(NN), ALLOC);
 	res->n_layers = n_layers;
@@ -80,15 +86,22 @@ NN*	init_nn(size_t n_layers, size_t input_cap, size_t n_input, size_t n_hidden, 
 	for (size_t i = 0; i < n_layers; ++i)
 	{
 		if (i == 0)
-			res->layers[i] = init_layer(INPUT, n_input, input_cap);
+		{
+			res->layers[i] = init_layer(INPUT, n_input, 1);
+			res->layers[i]->layer_activ = NULL;
+		}
 		else if (i == n_layers - 1)
+		{
 			res->layers[i] = init_layer(OUTPUT, n_output, n_hidden);
+			res->layers[i]->layer_activ = output_activ;
+		}
 		else
 		{
 			if (i - 1 == 0)
 				res->layers[i] = init_layer(HIDDEN, n_hidden, n_input);
 			else
 				res->layers[i] = init_layer(HIDDEN, n_hidden, n_hidden);
+			res->layers[i]->layer_activ = hidden_activ;
 		}
 	}
 
@@ -105,17 +118,13 @@ NN*	init_nn(size_t n_layers, size_t input_cap, size_t n_input, size_t n_hidden, 
 
 //--------------------------------
 
-void	take_input(Layer* input_layer, double** data)
+void take_input(Layer* input_layer, double* sample)
 {
-	for (size_t i = 0; i < input_layer->n_nodes; ++i)
+    for (size_t i = 0; i < input_layer->n_nodes; ++i)
 	{
-		Node*	cur_node = input_layer->nodes[i];
-		double*	cur_row = data[i];
-		for (size_t j = 0; j < cur_node->n_inputs; ++j)
-		{
-			cur_node->input[j] = cur_row[j];
-		}
-	}
+        Node* cur_node = input_layer->nodes[i];
+        cur_node->input[0] = sample[i];
+    }
 }
 
 void	collect_output(Layer* l1, Layer* l2)
@@ -130,7 +139,7 @@ void	collect_output(Layer* l1, Layer* l2)
 	}
 }
 
-void	compute_node(Node* n)
+void	compute_node(Node* n, double (*activ)(double))
 {
 	double res = 0;
 
@@ -139,22 +148,46 @@ void	compute_node(Node* n)
 		res += n->weight[i] * n->input[i];
 	}
 	res += n->bias;
-	n->output = res;
+	if (!activ)
+		n->output = activ(res);
+	else
+		n->output = res;
 }
 
-void	compute_layer(Layer* l)
+void compute_layer(Layer* l)
 {
-	if (l->t != INPUT)
+    if (l->t == INPUT)
 	{
-		collect_output(l->back, l);
-	}
-	for (size_t i = 0; i < l->n_nodes; ++i)
+        for (size_t i = 0; i < l->n_nodes; ++i)
+		{
+            Node* node = l->nodes[i];
+            node->output = node->input[0];
+        }
+    }
+	else
 	{
-		compute_node(l->nodes[i]);
-	}
+        collect_output(l->back, l);
+		void*	activ = NULL;
+		switch (l->t)
+		{
+			case OUTPUT:
+				activ = sigmoid;
+				break ;
+			case HIDDEN:
+				activ = relu;
+				break ;
+			case INPUT:
+				activ = NULL;
+				break ;
+		}
+        for (size_t i = 0; i < l->n_nodes; ++i)
+		{
+            compute_node(l->nodes[i], activ);
+        }
+    }
 }
 
-void	forward_propagation(NN* nn, double** data)
+void	forward_propagation(NN* nn, double* data)
 {
 	if (nn->n_layers < 3)
 	{
