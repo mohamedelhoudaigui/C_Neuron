@@ -30,7 +30,7 @@ double relu(double n)
 	return (n <= 0 ? 0 : n);
 }
 
-double sigmoid(double n)
+double sigmoid(double n) // for binary output
 {
 	return (1 / (1 + pow(EULER_NUMBER, -n)));
 }
@@ -83,19 +83,20 @@ NN*	init_nn(size_t n_layers,
 	NN* res = gb_malloc(1, sizeof(NN), ALLOC);
 	res->n_layers = n_layers;
 	res->layers = gb_malloc(n_layers + 1, sizeof(Layer*), ALLOC);
+
 	for (size_t i = 0; i < n_layers; ++i)
 	{
-		if (i == 0)
+		if (i == 0) // input
 		{
 			res->layers[i] = init_layer(INPUT, n_input, 1);
 			res->layers[i]->layer_activ = NULL;
 		}
-		else if (i == n_layers - 1)
+		else if (i == n_layers - 1) // output
 		{
 			res->layers[i] = init_layer(OUTPUT, n_output, n_hidden);
 			res->layers[i]->layer_activ = output_activ;
 		}
-		else
+		else // hidden
 		{
 			if (i - 1 == 0)
 				res->layers[i] = init_layer(HIDDEN, n_hidden, n_input);
@@ -105,10 +106,14 @@ NN*	init_nn(size_t n_layers,
 		}
 	}
 
+	// init back and forth pointers between layers
+
 	for (size_t i = 0; i < n_layers - 1; ++i)
 		res->layers[i]->next = res->layers[i + 1];
 	for (size_t i = n_layers - 1; i > 0; --i)
 		res->layers[i]->back = res->layers[i - 1];
+
+	// set usefull pointers
 
 	res->input_layer = res->layers[0];
 	res->output_layer = res->layers[n_layers - 1];

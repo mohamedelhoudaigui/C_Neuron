@@ -1,11 +1,11 @@
 # Source files
-SRCS = main.c garbage.c funcs.c
+SRCS = main.c garbage.c funcs.c utils.c
 
 # Object files
 OBJS = $(patsubst %.c, %.o, $(SRCS))
 
 # Headers
-HEADERS = funcs.h macro.h types.h garbage.h
+HEADERS = funcs.h macro.h types.h garbage.h utils.h
 
 # Compiler
 CC = cc
