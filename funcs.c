@@ -72,7 +72,7 @@ Layer*	init_layer(layer_type t, size_t n_nodes, size_t prev_n_nodes)
 	return (res);
 }
 
-NN*	init_nn(size_t n_layers, size_t n_input, size_t n_hidden, size_t n_output)
+NN*	init_nn(size_t n_layers, size_t input_cap, size_t n_input, size_t n_hidden, size_t n_output)
 {
 	NN* res = gb_malloc(1, sizeof(NN), ALLOC);
 	res->n_layers = n_layers;
@@ -80,7 +80,7 @@ NN*	init_nn(size_t n_layers, size_t n_input, size_t n_hidden, size_t n_output)
 	for (size_t i = 0; i < n_layers; ++i)
 	{
 		if (i == 0)
-			res->layers[i] = init_layer(INPUT, n_input, 1);
+			res->layers[i] = init_layer(INPUT, n_input, input_cap);
 		else if (i == n_layers - 1)
 			res->layers[i] = init_layer(OUTPUT, n_output, n_hidden);
 		else
@@ -105,11 +105,16 @@ NN*	init_nn(size_t n_layers, size_t n_input, size_t n_hidden, size_t n_output)
 
 //--------------------------------
 
-void	take_input(Layer* input_layer, double* data, size_t data_size)
+void	take_input(Layer* input_layer, double** data)
 {
-	for (size_t i = 0; i < data_size && i < input_layer->n_nodes; ++i)
+	for (size_t i = 0; i < input_layer->n_nodes; ++i)
 	{
-		input_layer->nodes[i]->input[0] = data[i];
+		Node*	cur_node = input_layer->nodes[i];
+		double*	cur_row = data[i];
+		for (size_t j = 0; j < cur_node->n_inputs; ++j)
+		{
+			cur_node->input[j] = cur_row[j];
+		}
 	}
 }
 
@@ -149,12 +154,14 @@ void	compute_layer(Layer* l)
 	}
 }
 
-void	forward_propagation(NN* nn, double* data)
+void	forward_propagation(NN* nn, double** data)
 {
-	for (size_t i = 0; i < nn->input_layer->n_nodes; ++i)
+	if (nn->n_layers < 3)
 	{
-		nn->input_layer->nodes[i]->input[0] = data[i];
+		fprintf(stderr, "need at least 3 layers\n");
+		exit(1);
 	}
+	take_input(nn->input_layer, data);
 	for (size_t i = 0; i < nn->n_layers; ++i)
 	{
 		compute_layer(nn->layers[i]);

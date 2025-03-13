@@ -3,12 +3,16 @@
 #include "macro.h"
 #include "garbage.h"
 
-double*	rand_data(size_t size)
+double**	rand_data(size_t y, size_t x)
 {
-	double* res = gb_malloc(size, sizeof(double), ALLOC);
-	for (size_t i = 0; i < size; ++i)
+	double** res = gb_malloc(y + 1, sizeof(double*), ALLOC);
+	for (size_t i = 0; i < y; ++i)
 	{
-		res[i] = rand() / 100000;
+		res[i] = gb_malloc(x, sizeof(double), ALLOC);
+		for (size_t j = 0; j < x; ++j)
+		{
+			res[i][j] = rand() / RAND_MAX;
+		}
 	}
 	return (res);
 }
@@ -17,8 +21,8 @@ int main ()
 {
 	srand(time(NULL));
 
-	double* data = rand_data(I_N_NEURONS);
-	NN* test = init_nn(N_LAYERS, I_N_NEURONS, H_N_NEURONS, O_N_NEURONS);
+	double** data = rand_data(DATA_Y, DATA_X);
+	NN* test = init_nn(N_LAYERS, DATA_X, I_N_NEURONS, H_N_NEURONS, O_N_NEURONS);
 	forward_propagation(test, data);
 
 	layer_data(test->input_layer);

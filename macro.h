@@ -9,10 +9,14 @@
 
 #define BIAS 1
 
+#define DATA_X 4
+#define DATA_Y 4
+
 #define N_LAYERS 6
-#define I_N_NEURONS 4
+#define I_N_NEURONS DATA_Y
 #define H_N_NEURONS 4
 #define O_N_NEURONS 1
+
 
 typedef enum layer_type {
 	INPUT,
