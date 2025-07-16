@@ -1,4 +1,4 @@
-#include "garbage.h"
+#include "../headers/garbage.h"
 
 void	clear_list(t_garb *list)
 {

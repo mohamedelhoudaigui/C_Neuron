@@ -1,8 +1,8 @@
-#include "types.h"
-#include "funcs.h"
-#include "macro.h"
-#include "garbage.h"
-#include "utils.h"
+#include "../headers/types.h"
+#include "../headers/funcs.h"
+#include "../headers/macro.h"
+#include "../headers/garbage.h"
+#include "../headers/utils.h"
 
 double**	rand_data(size_t y, size_t x)
 {
@@ -27,6 +27,8 @@ double*	true_data(size_t x)
 	}
 	return (res);
 }
+
+
 
 int main ()
 {

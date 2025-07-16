@@ -1,11 +1,11 @@
 # Source files
-SRCS = main.c garbage.c funcs.c utils.c
+SRCS = $(wildcard ./src/*.c)
 
 # Object files
-OBJS = $(patsubst %.c, %.o, $(SRCS))
+OBJS = $(patsubst ./src/%.c, ./obj/%.o, $(SRCS))
 
 # Headers
-HEADERS = funcs.h macro.h types.h garbage.h utils.h
+HEADERS = $(wildcard ./headers/*.h)
 
 # Compiler
 CC = cc
@@ -21,18 +21,16 @@ all: $(NAME)
 
 # Rule to create the static library
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
+	$(CC) $(CFLAGS) $^ -o $@
 
-# Rule to compile source files into object files
-%.o: %.c $(HEADERS)
+# Rule to compile .c files into .o files
+./obj/%.o: ./src/%.c $(HEADERS)
+	mkdir -p ./obj
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Clean up build artifacts
+# Clean target to remove generated files
 clean:
-	rm -f $(OBJS)
+	rm -rf ./obj $(NAME)
 
-fclean: clean
-	rm -f $(NAME)
-
-# Rebuild the library
-re: clean all
+# Phony targets
+.PHONY: all clean

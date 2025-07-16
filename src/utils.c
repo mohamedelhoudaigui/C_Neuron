@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "../headers/utils.h"
 
 void	print_vector(double* s, size_t size)
 {

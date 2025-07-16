@@ -1,4 +1,4 @@
-#include "funcs.h"
+#include "../headers/funcs.h"
 
 void	node_data(Node* node)
 {

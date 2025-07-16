@@ -12,7 +12,6 @@ typedef struct Node {
 	double	output;
 
 	size_t n_inputs;
-
 }	Node;
 
 typedef struct	Layer {
