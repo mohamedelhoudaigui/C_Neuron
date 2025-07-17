@@ -10,6 +10,7 @@ typedef struct Node {
 
 	double	bias;
 	double	output;
+	double	delta; // for ouput node
 
 	size_t n_inputs;
 }	Node;

@@ -37,17 +37,22 @@ int main ()
 	double**	data = rand_data(DATA_Y, DATA_X);
 	double*		t_data = true_data(DATA_X);
 
-	print_vector(t_data, DATA_Y);
+	// print_vector(t_data, DATA_Y);
 
 	NN* test = init_nn(N_LAYERS,
 						I_N_NEURONS, H_N_NEURONS, O_N_NEURONS,
 						sigmoid, relu);
 
 	for (int i = 0; i < DATA_Y; ++i)
+	{
 		forward_propagation(test, data[i]);
+		MeanSquaredError(test, t_data);
+	}
 
-	layer_data(test->input_layer);
-	layer_data(test->output_layer);
+
+
+	// layer_data(test->input_layer);
+	// layer_data(test->output_layer);
 
 	gb_malloc(0, 0, CLEAR);
 	return (0);

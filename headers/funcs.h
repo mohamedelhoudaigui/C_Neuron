@@ -21,9 +21,11 @@ void	forward_propagation(NN* nn, double* data);
 
 double	relu(double n);
 double	sigmoid(double n);
+double	sigmoid_derivative(double n);
 double	xavier_init(size_t n_inputs);
 
 void	node_data(Node* node);
 void	layer_data(Layer* l);
+void	MeanSquaredError(NN* nn, double* true_data);
 
 #endif

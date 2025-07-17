@@ -35,6 +35,11 @@ double sigmoid(double n) // for binary output
 	return (1 / (1 + pow(EULER_NUMBER, -n)));
 }
 
+double	sigmoid_derivative(double n)
+{
+    return (sigmoid(n) * (1.0 - sigmoid(n)))
+}
+
 double	xavier_init(size_t n_inputs)
 {
 	return ((double)rand() / RAND_MAX * 2.0 - 1.0) * sqrt(1.0 / n_inputs);
@@ -153,7 +158,7 @@ void	compute_node(Node* n, double (*activ)(double))
 		res += n->weight[i] * n->input[i];
 	}
 	res += n->bias;
-	if (!activ)
+	if (activ)
 		n->output = activ(res);
 	else
 		n->output = res;
@@ -168,28 +173,25 @@ void compute_layer(Layer* l)
             Node* node = l->nodes[i];
             node->output = node->input[0];
         }
+		return ;
     }
-	else
+	collect_output(l->back, l);
+	void*	activ = NULL;
+	switch (l->t)
 	{
-        collect_output(l->back, l);
-		void*	activ = NULL;
-		switch (l->t)
-		{
-			case OUTPUT:
-				activ = sigmoid;
-				break ;
-			case HIDDEN:
-				activ = relu;
-				break ;
-			case INPUT:
-				activ = NULL;
-				break ;
-		}
-        for (size_t i = 0; i < l->n_nodes; ++i)
-		{
-            compute_node(l->nodes[i], activ);
-        }
-    }
+		case OUTPUT:
+			activ = sigmoid;
+			break ;
+		case HIDDEN:
+			activ = relu;
+			break ;
+		case INPUT:
+			break ;
+	}
+	for (size_t i = 0; i < l->n_nodes; ++i)
+	{
+		compute_node(l->nodes[i], activ);
+	}
 }
 
 void	forward_propagation(NN* nn, double* data)
@@ -203,5 +205,35 @@ void	forward_propagation(NN* nn, double* data)
 	for (size_t i = 0; i < nn->n_layers; ++i)
 	{
 		compute_layer(nn->layers[i]);
+	}
+}
+
+void	MeanSquaredError(NN* nn, double* true_data)
+{
+    Layer* last_layer = nn->output_layer;
+    size_t n_outputs = last_layer->n_nodes;
+    Node** last_layer_nodes = last_layer->nodes;
+    double mse = 0;
+
+    for (size_t i = 0; i < n_outputs; ++i)
+    {
+        double diff = last_layer_nodes[i]->output - true_data[i];
+		// we square the diff to eliminate the negative and to enriche the value
+        mse += diff * diff;
+    }
+
+    mse /= n_outputs;
+
+    return (mse);
+}
+
+void	CalculateDelta(NN* nn, double* true_data)
+{
+	Layer* output_layer = nn->output_layer;
+
+	for (size_t i = 0; i < output_layer->n_nodes; ++i)
+	{
+		Node* node = output_layer->nodes[i];
+		node->delta = node->ouput - true_data[i] * sigmoid_derivative(node->ouput);
 	}
 }
