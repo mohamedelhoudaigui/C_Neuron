@@ -1,61 +1,35 @@
 #include "../headers/garbage.h"
 
-void	clear_list(t_garb *list)
+
+static void clear_mem(void* mem_arr[], int* i)
 {
-	t_garb	*tmp;
-
-	if (!list)
-		return ;
-	while (list)
+	while (*i >= 0)
 	{
-		tmp = list;
-		free(tmp->addr);
-		list = list->next;
-		free(tmp);
+		free(mem_arr[*i]);
+		*i = *i - 1;
 	}
-}
-
-void	add_node(t_garb **list, t_garb *node)
-{
-	t_garb	*head;
-
-	if (!list || !node)
-		return ;
-	head = *list;
-	node->next = NULL;
-	if (!head)
-	{
-		*list = node;
-		return ;
-	}
-	while (head->next != NULL)
-		head = head->next;
-	head->next = node;
+	*i = 0;
 }
 
 void	*gb_malloc(size_t count, size_t size, int type)
 {
-	static t_garb	*list;
-	t_garb			*node;
-	void			*addr;
+	static void		*mem_arr[ADDR_NUM] = {0};
+	static int	i = 0;
+	void			*addr = NULL;
 
-	if (type == CLEAR)
-		clear_list(list);
-	else if (type == ALLOC)
+	switch (type)
 	{
-		if (!(addr = calloc(count, size)))
-		{
-			clear_list(list);
-			exit(2);
-		}
-		if (!(node = calloc(1, sizeof(t_garb))))
-		{
-			clear_list(list);
-			exit(2);
-		}
-		node->addr = addr;
-		add_node(&list, node);
-		return (addr);
+		case CLEAR:
+			clear_mem(mem_arr, &i);
+			break ;
+		case ALLOC:
+			if (!(addr = calloc(count, size)))
+			{
+				clear_mem(mem_arr, &i);
+				exit(2);
+			}
+			mem_arr[i++] = addr;
+			return (addr);
 	}
 	return (NULL);
 }

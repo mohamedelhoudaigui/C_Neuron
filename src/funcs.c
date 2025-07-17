@@ -27,12 +27,17 @@ void	layer_data(Layer* l)
 
 double relu(double n)
 {
-	return (n <= 0 ? 0 : n);
+	return (n <= 0.0 ? 0.0 : n);
+}
+
+double relu_derivative(double n)
+{
+	return (n > 0 ? 1.0 : 0.0);
 }
 
 double sigmoid(double n) // for binary output
 {
-	return (1 / (1 + pow(EULER_NUMBER, -n)));
+	return (1.0 / (1.0 + pow(EULER_NUMBER, -n)));
 }
 
 double	sigmoid_derivative(double n)
@@ -158,10 +163,15 @@ void	compute_node(Node* n, double (*activ)(double))
 		res += n->weight[i] * n->input[i];
 	}
 	res += n->bias;
-	if (activ)
-		n->output = activ(res);
-	else
-		n->output = res;
+	switch((uintptr_t)activ)
+	{
+		case 0:
+			n->output = res;
+			break ;
+		default:
+			n->output = activ(res);
+			break ;
+	}
 }
 
 void compute_layer(Layer* l)
@@ -208,7 +218,18 @@ void	forward_propagation(NN* nn, double* data)
 	}
 }
 
-double	MeanSquaredError(NN* nn, double* true_data)
+void	calculate_delta(NN* nn, double* true_data)
+{
+	Layer* output_layer = nn->output_layer;
+
+	for (size_t i = 0; i < output_layer->n_nodes; ++i)
+	{
+		Node* node = output_layer->nodes[i];
+		node->delta = (node->output - true_data[i]) * sigmoid_derivative(node->output);
+	}
+}
+
+double	mean_squared_error(NN* nn, double* true_data)
 {
     Layer* last_layer = nn->output_layer;
     size_t n_outputs = last_layer->n_nodes;
@@ -227,45 +248,29 @@ double	MeanSquaredError(NN* nn, double* true_data)
     return (mse);
 }
 
-void	CalculateDelta(NN* nn, double* true_data)
+void back_prop_hidden_layers(NN* nn)
 {
-	Layer* output_layer = nn->output_layer;
-
-	for (size_t i = 0; i < output_layer->n_nodes; ++i)
-	{
-		Node* node = output_layer->nodes[i];
-		node->delta = (node->output - true_data[i]) * sigmoid_derivative(node->output);
-	}
-}
-
-void BackpropagateHiddenLayers(NN* nn)
-{
-    // Start from the layer before the output layer, going backwards
 	Layer* i = nn->output_layer->back;
-    while (i->t != INPUT) // Exclude input layer (index 0)
+
+    while (i->t != INPUT)
     {
         Layer* current_layer = i;
         Layer* next_layer = i->next;
 
-        // For each node in the current layer
         for (size_t j = 0; j < current_layer->n_nodes; j++)
         {
             Node* current_node = current_layer->nodes[j];
             double sum_delta = 0.0;
 
-            // Sum up all delta contributions from the next layer
             for (size_t k = 0; k < next_layer->n_nodes; k++)
             {
                 Node* next_node = next_layer->nodes[k];
-                // Weight from current node to the next layer node * delta of that node
                 sum_delta += next_node->weight[j] * next_node->delta;
             }
-            
-            // Calculate delta for current node - depends on activation function
+
             if (current_layer->layer_activ == relu)
             {
-                // Derivative of ReLU is 1 if output > 0, otherwise 0
-                current_node->delta = sum_delta * (current_node->output > 0 ? 1.0 : 0.0);
+                current_node->delta = sum_delta * relu_derivative(current_node->output);
             }
             else if (current_layer->layer_activ == sigmoid)
             {
@@ -276,37 +281,29 @@ void BackpropagateHiddenLayers(NN* nn)
     }
 }
 
-void UpdateWeights(NN* nn, double learning_rate)
+void update_weights_biases(NN* nn, double learning_rate)
 {
-    // Skip the input layer (i=0) since it doesn't have incoming weights to update
-    for (size_t i = 1; i < nn->n_layers; i++)
-    {
-        Layer* current_layer = nn->layers[i];
+	Layer* i = nn->input_layer->next;
 
-        // For each node in the current layer
-        for (size_t j = 0; j < current_layer->n_nodes; j++)
+    while (i)
+    {
+        for (size_t j = 0; j < i->n_nodes; j++)
         {
-            Node* node = current_layer->nodes[j];
-            // Update weights
+            Node* node = i->nodes[j];
             for (size_t k = 0; k < node->n_inputs; k++)
             {
                 // Gradient descent update rule: w = w - learning_rate * delta * input
                 node->weight[k] -= learning_rate * node->delta * node->input[k];
             }
-            // Update bias
             node->bias -= learning_rate * node->delta;
         }
+		i = i->next;
     }
 }
 
-void Backpropagate(NN* nn, double* true_data)
+void back_propagate(NN* nn, double* true_data)
 {
-    // 1. Calculate delta for output layer
-    CalculateDelta(nn, true_data);
-    
-    // 2. Backpropagate error to hidden layers
-    BackpropagateHiddenLayers(nn);
-    
-    // 3. Update weights and biases
-    UpdateWeights(nn, L_RATE);
+    calculate_delta(nn, true_data);
+    back_prop_hidden_layers(nn);
+    update_weights_biases(nn, L_RATE);
 }

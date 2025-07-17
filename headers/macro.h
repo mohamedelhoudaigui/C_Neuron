@@ -9,17 +9,19 @@
 
 #define BIAS 1
 
-#define DATA_X 4
-#define DATA_Y 1
+#define DATA_X 23
+#define DATA_Y 5
 
 #define N_LAYERS 3
 #define I_N_NEURONS DATA_X
-#define H_N_NEURONS 4
+#define H_N_NEURONS 25
 #define O_N_NEURONS DATA_X
 
 #define EULER_NUMBER 2.71828
 
-#define L_RATE 0.1
+#define L_RATE 0.01
+
+#define NUM_EPOCHS 1000
 
 
 typedef enum layer_type {
