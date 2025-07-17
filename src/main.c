@@ -46,13 +46,13 @@ int main ()
 	for (int i = 0; i < DATA_Y; ++i)
 	{
 		forward_propagation(test, data[i]);
-		MeanSquaredError(test, t_data);
+		Backpropagate(test, t_data);
+		layer_data(test->output_layer);
+		// MeanSquaredError(test, t_data);
 	}
 
 
-
 	// layer_data(test->input_layer);
-	// layer_data(test->output_layer);
 
 	gb_malloc(0, 0, CLEAR);
 	return (0);

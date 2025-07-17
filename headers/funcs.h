@@ -26,6 +26,11 @@ double	xavier_init(size_t n_inputs);
 
 void	node_data(Node* node);
 void	layer_data(Layer* l);
-void	MeanSquaredError(NN* nn, double* true_data);
+
+double	MeanSquaredError(NN* nn, double* true_data);
+void	CalculateDelta(NN* nn, double* true_data);
+void	BackpropagateHiddenLayers(NN* nn);
+void	UpdateWeights(NN* nn, double learning_rate);
+void	Backpropagate(NN* nn, double* true_data);
 
 #endif

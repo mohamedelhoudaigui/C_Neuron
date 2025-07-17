@@ -19,6 +19,8 @@
 
 #define EULER_NUMBER 2.71828
 
+#define L_RATE 0.1
+
 
 typedef enum layer_type {
 	INPUT,

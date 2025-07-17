@@ -37,7 +37,7 @@ double sigmoid(double n) // for binary output
 
 double	sigmoid_derivative(double n)
 {
-    return (sigmoid(n) * (1.0 - sigmoid(n)))
+    return (sigmoid(n) * (1.0 - sigmoid(n)));
 }
 
 double	xavier_init(size_t n_inputs)
@@ -208,7 +208,7 @@ void	forward_propagation(NN* nn, double* data)
 	}
 }
 
-void	MeanSquaredError(NN* nn, double* true_data)
+double	MeanSquaredError(NN* nn, double* true_data)
 {
     Layer* last_layer = nn->output_layer;
     size_t n_outputs = last_layer->n_nodes;
@@ -234,6 +234,79 @@ void	CalculateDelta(NN* nn, double* true_data)
 	for (size_t i = 0; i < output_layer->n_nodes; ++i)
 	{
 		Node* node = output_layer->nodes[i];
-		node->delta = node->ouput - true_data[i] * sigmoid_derivative(node->ouput);
+		node->delta = (node->output - true_data[i]) * sigmoid_derivative(node->output);
 	}
+}
+
+void BackpropagateHiddenLayers(NN* nn)
+{
+    // Start from the layer before the output layer, going backwards
+	Layer* i = nn->output_layer->back;
+    while (i->t != INPUT) // Exclude input layer (index 0)
+    {
+        Layer* current_layer = i;
+        Layer* next_layer = i->next;
+
+        // For each node in the current layer
+        for (size_t j = 0; j < current_layer->n_nodes; j++)
+        {
+            Node* current_node = current_layer->nodes[j];
+            double sum_delta = 0.0;
+
+            // Sum up all delta contributions from the next layer
+            for (size_t k = 0; k < next_layer->n_nodes; k++)
+            {
+                Node* next_node = next_layer->nodes[k];
+                // Weight from current node to the next layer node * delta of that node
+                sum_delta += next_node->weight[j] * next_node->delta;
+            }
+            
+            // Calculate delta for current node - depends on activation function
+            if (current_layer->layer_activ == relu)
+            {
+                // Derivative of ReLU is 1 if output > 0, otherwise 0
+                current_node->delta = sum_delta * (current_node->output > 0 ? 1.0 : 0.0);
+            }
+            else if (current_layer->layer_activ == sigmoid)
+            {
+                current_node->delta = sum_delta * sigmoid_derivative(current_node->output);
+            }
+        }
+		i = i->back;
+    }
+}
+
+void UpdateWeights(NN* nn, double learning_rate)
+{
+    // Skip the input layer (i=0) since it doesn't have incoming weights to update
+    for (size_t i = 1; i < nn->n_layers; i++)
+    {
+        Layer* current_layer = nn->layers[i];
+
+        // For each node in the current layer
+        for (size_t j = 0; j < current_layer->n_nodes; j++)
+        {
+            Node* node = current_layer->nodes[j];
+            // Update weights
+            for (size_t k = 0; k < node->n_inputs; k++)
+            {
+                // Gradient descent update rule: w = w - learning_rate * delta * input
+                node->weight[k] -= learning_rate * node->delta * node->input[k];
+            }
+            // Update bias
+            node->bias -= learning_rate * node->delta;
+        }
+    }
+}
+
+void Backpropagate(NN* nn, double* true_data)
+{
+    // 1. Calculate delta for output layer
+    CalculateDelta(nn, true_data);
+    
+    // 2. Backpropagate error to hidden layers
+    BackpropagateHiddenLayers(nn);
+    
+    // 3. Update weights and biases
+    UpdateWeights(nn, L_RATE);
 }
