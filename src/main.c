@@ -57,7 +57,6 @@ int main ()
 		printf("Epoch %d, Total Error: %f\n", epoch, total_error);
 	}
 
-
 	gb_malloc(0, 0, CLEAR);
 	return (0);
 }

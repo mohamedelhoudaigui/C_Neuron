@@ -60,6 +60,7 @@ Node*	init_node(size_t n_inputs, double bias)
 	res->input = gb_malloc(n_inputs, sizeof(double), ALLOC);
 	res->weight = gb_malloc(n_inputs, sizeof(double), ALLOC);
 	res->output = 0;
+	res->delta = 0;
 
 	for (size_t i = 0; i < n_inputs; ++i)
 	{

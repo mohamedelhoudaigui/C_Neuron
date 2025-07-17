@@ -17,12 +17,11 @@ typedef struct Node {
 
 typedef struct	Layer {
 	Node**	nodes;
-	size_t	n_nodes;
-	layer_type t;
 	struct Layer* next;
 	struct Layer* back;
-
 	double (*layer_activ) (double n);
+	size_t	n_nodes;
+	layer_type t;
 
 }	Layer;
 
