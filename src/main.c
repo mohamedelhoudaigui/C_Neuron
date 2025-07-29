@@ -41,7 +41,7 @@ void test_network(NN* network, double** test_data, double* expected_outputs,
     for (size_t i = 0; i < num_samples; ++i)
 	{
         forward_propagation(network, test_data[i]);
-        
+
         // Print inputs
         printf("\nSample %zu\n", i + 1);
         printf("Inputs: ");
@@ -77,8 +77,6 @@ void test_network(NN* network, double** test_data, double* expected_outputs,
     double avg_error = total_error / num_samples;
     printf("\nAverage error across all test samples: %f\n", avg_error);
 }
-
-
 
 int main() {
     srand(time(NULL));

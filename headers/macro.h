@@ -20,8 +20,8 @@
 #define EULER_NUMBER 2.71828
 
 #define L_RATE 0.01
-#define NUM_EPOCHS 1000
-#define N_TESTS 100
+#define NUM_EPOCHS 300
+#define N_TESTS 10
 
 
 typedef enum layer_type {
