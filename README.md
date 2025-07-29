@@ -4,7 +4,6 @@ A simple, lightweight, and educational feedforward neural network built from scr
 
 ![alt text](https://img.shields.io/badge/Language-C-blue.svg)
 ![alt text](https://img.shields.io/badge/Standard-C11-brightgreen.svg)
-![alt text](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 This project is an exploration into the fundamental concepts of neural networks, implemented with no external machine learning libraries. It's designed to be a clear and understandable guide to how networks learn through forward and backward propagation.
 
