@@ -1,5 +1,3 @@
-Of course! Here is a fitting, friendly, and illustrative README for your GitHub project.
-
 C-Neuron 🧠
 
 A simple, lightweight, and educational feedforward neural network built from scratch in C.
