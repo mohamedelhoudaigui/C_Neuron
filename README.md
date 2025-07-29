@@ -70,17 +70,7 @@ The network follows the classic feedforward architecture. Data flows from the in
 
 Network Architecture
 
-A simple visual representation of the data flow:
-
-  [Input Layer]      [Hidden Layer(s)]      [Output Layer]
-  ┌───────────┐      ┌───────────────┐      ┌────────────┐
-  │  Node 1   │──────│    Node 1     │──────│   Node 1   │
-  │   ...     │      │      ...      │      │    ...     │
-  │  Node N   │──────│    Node M     │──────│   Node K   │
-  └───────────┘      └───────────────┘      └────────────┘
-       │                    │                      │
-       └────────────────────┴──────────────────────┘
-                    Forward Propagation ->
+![Alt text](https://i0.wp.com/eastgate-software.com/wp-content/uploads/2024/10/fnn-how-it-works.png "Network Architecture Presentation")
 
 Training Loop
 
@@ -97,27 +87,6 @@ Update Weights & Biases: The weights and biases are adjusted using gradient desc
 This cycle is repeated for a number of NUM_EPOCHS until the network's predictions improve.
 
 <br>
-
-📁 Project Structure
-
-The project is organized into source files, headers, and a Makefile for clarity and scalability.
-
-c_neuron_network/ <br>
-├── Makefile                # Manages compilation <br>
-├── headers/                # Header files <br>
-│   ├── funcs.h             # Core neural network functions <br>
-│   ├── garbage.h           # Custom memory manager <br>
-│   ├── macro.h             # Project-wide constants and enums <br>
-│   ├── types.h             # Struct definitions (Node, Layer, NN) <br>
-│   └── utils.h             # Utility functions <br>
-└── src/                    # Source code <br>
-    ├── funcs.c             # Implementation of core functions <br>
-    ├── garbage.c           # Implementation of the garbage collector <br>
-    ├── main.c              # Main driver for training and testing <br>
-    └── utils.c             # Implementation of utility functions <br>
-
-<br>
-
 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
