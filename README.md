@@ -90,9 +90,3 @@ This cycle is repeated for a number of NUM_EPOCHS until the network's prediction
 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
-
-<br>
-
-📜 License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
