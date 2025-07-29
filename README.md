@@ -102,19 +102,19 @@ This cycle is repeated for a number of NUM_EPOCHS until the network's prediction
 
 The project is organized into source files, headers, and a Makefile for clarity and scalability.
 
-c_neuron_network/
-├── Makefile                # Manages compilation
-├── headers/                # Header files
-│   ├── funcs.h             # Core neural network functions
-│   ├── garbage.h           # Custom memory manager
-│   ├── macro.h             # Project-wide constants and enums
-│   ├── types.h             # Struct definitions (Node, Layer, NN)
-│   └── utils.h             # Utility functions
-└── src/                    # Source code
-    ├── funcs.c             # Implementation of core functions
-    ├── garbage.c           # Implementation of the garbage collector
-    ├── main.c              # Main driver for training and testing
-    └── utils.c             # Implementation of utility functions
+c_neuron_network/ <br>
+├── Makefile                # Manages compilation <br>
+├── headers/                # Header files <br>
+│   ├── funcs.h             # Core neural network functions <br>
+│   ├── garbage.h           # Custom memory manager <br>
+│   ├── macro.h             # Project-wide constants and enums <br>
+│   ├── types.h             # Struct definitions (Node, Layer, NN) <br>
+│   └── utils.h             # Utility functions <br>
+└── src/                    # Source code <br>
+    ├── funcs.c             # Implementation of core functions <br>
+    ├── garbage.c           # Implementation of the garbage collector <br>
+    ├── main.c              # Main driver for training and testing <br>
+    └── utils.c             # Implementation of utility functions <br>
 
 <br>
 
