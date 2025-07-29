@@ -1,4 +1,4 @@
-# C-Neuron 🧠
+# C_Neuron 🧠
 
 A simple, lightweight, and educational feedforward neural network built from scratch in C.
 
