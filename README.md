@@ -72,7 +72,7 @@ Network Architecture
 
 A simple visual representation of the data flow:
 
-[Input Layer]      [Hidden Layer(s)]      [Output Layer]
+  [Input Layer]      [Hidden Layer(s)]      [Output Layer]
   ┌───────────┐      ┌───────────────┐      ┌────────────┐
   │  Node 1   │──────│    Node 1     │──────│   Node 1   │
   │   ...     │      │      ...      │      │    ...     │
